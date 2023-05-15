@@ -11,10 +11,14 @@ final class ImagePreviewCell: UICollectionViewCell {
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleToFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    
+    override func prepareForReuse() {
+        self.imageView.image = nil
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
