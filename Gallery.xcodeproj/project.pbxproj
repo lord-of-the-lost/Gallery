@@ -8,18 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		6037EAA32A0FBBE1007EBADA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037EAA22A0FBBE1007EBADA /* AppDelegate.swift */; };
-		6037EAA72A0FBBE1007EBADA /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037EAA62A0FBBE1007EBADA /* GalleryViewController.swift */; };
 		6037EAAC2A0FBBE6007EBADA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6037EAAB2A0FBBE6007EBADA /* Assets.xcassets */; };
 		6037EAAF2A0FBBE6007EBADA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6037EAAD2A0FBBE6007EBADA /* LaunchScreen.storyboard */; };
+		604130DA2A11C6F500BD986F /* ImagePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604130D82A11C6F500BD986F /* ImagePreviewCell.swift */; };
+		604130DB2A11C6F500BD986F /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604130D92A11C6F500BD986F /* GalleryViewController.swift */; };
+		604130DE2A11C77900BD986F /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604130DD2A11C77900BD986F /* ImageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		6037EA9F2A0FBBE1007EBADA /* Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gallery.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6037EAA22A0FBBE1007EBADA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6037EAA62A0FBBE1007EBADA /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		6037EAAB2A0FBBE6007EBADA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6037EAAE2A0FBBE6007EBADA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6037EAB02A0FBBE6007EBADA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		604130D82A11C6F500BD986F /* ImagePreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePreviewCell.swift; sourceTree = "<group>"; };
+		604130D92A11C6F500BD986F /* GalleryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
+		604130DD2A11C77900BD986F /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +74,8 @@
 		6037EAB72A0FBC4D007EBADA /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				6037EAA62A0FBBE1007EBADA /* GalleryViewController.swift */,
+				604130D72A11C6F500BD986F /* Gallery */,
+				604130DC2A11C73200BD986F /* Image */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -83,6 +88,23 @@
 				6037EAB02A0FBBE6007EBADA /* Info.plist */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		604130D72A11C6F500BD986F /* Gallery */ = {
+			isa = PBXGroup;
+			children = (
+				604130D82A11C6F500BD986F /* ImagePreviewCell.swift */,
+				604130D92A11C6F500BD986F /* GalleryViewController.swift */,
+			);
+			path = Gallery;
+			sourceTree = "<group>";
+		};
+		604130DC2A11C73200BD986F /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				604130DD2A11C77900BD986F /* ImageViewController.swift */,
+			);
+			path = Image;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,7 +177,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6037EAA72A0FBBE1007EBADA /* GalleryViewController.swift in Sources */,
+				604130DB2A11C6F500BD986F /* GalleryViewController.swift in Sources */,
+				604130DA2A11C6F500BD986F /* ImagePreviewCell.swift in Sources */,
+				604130DE2A11C77900BD986F /* ImageViewController.swift in Sources */,
 				6037EAA32A0FBBE1007EBADA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
