@@ -9,9 +9,11 @@ import UIKit
 
 final class GalleryViewController: UIViewController {
     
-    private var imagesArray: [UIImage] = []
+    private var imagesArray: [String] = []
     
     private var network: NetworkServiceProtocol
+    
+    private var cacheService: ImageCacheServiceProtocol
     
     private lazy var galleryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -19,7 +21,7 @@ final class GalleryViewController: UIViewController {
         layout.minimumInteritemSpacing = 5
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .gray
+        collectionView.backgroundColor = UIColor(named: "BackgroundColor")
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(ImagePreviewCell.self, forCellWithReuseIdentifier: "imageCell")
@@ -46,7 +48,11 @@ final class GalleryViewController: UIViewController {
     }
     
     init() {
+        guard let cacheService = ImageCacheService() else {
+            fatalError("Unable to create ImageCacheService")
+        }
         self.network = NetworkService()
+        self.cacheService = cacheService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -55,40 +61,55 @@ final class GalleryViewController: UIViewController {
     }
     
     private func fetchData() {
-        network.fetchTextFileContent(completion: { [weak self] result in
+        network.fetchTextFileContent { [weak self] result in
             guard let self = self else { return }
+            
             switch result {
             case .success(let content):
                 let imageURLs = content.components(separatedBy: .newlines)
                 
                 for imageURLString in imageURLs {
                     if let imageURL = URL(string: imageURLString) {
-                        self.network.downloadImage(from: imageURL) { result in
-                            switch result {
-                            case .success(let imageData):
-                                if let image = UIImage(data: imageData) {
-                                    DispatchQueue.main.async {
-                                        self.imagesArray.append(image)
-                                        self.galleryCollectionView.reloadData()
-                                    }
-                                }
-                            case .failure(let error):
-                                print("Ошибка загрузки изображения: \(error)")
-                            }
-                        }
+                        self.downloadAndCacheImage(from: imageURL)
                     }
                 }
                 
             case .failure(let error):
                 print("Ошибка загрузки текстового файла: \(error)")
             }
-        })
+        }
     }
     
+    private func downloadAndCacheImage(from url: URL) {
+        network.downloadImage(from: url) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let imageData):
+                if let image = UIImage(data: imageData) {
+                    let originalFileName = "\(UUID().uuidString).jpg"
+                    self.cacheService.saveImageToCache(image: image, fileName: originalFileName)
+                    self.imagesArray.append(originalFileName)
+                    
+                    if let previewImage = image.compressToPreview() {
+                        let previewFileName = "\(UUID().uuidString).jpg"
+                        self.cacheService.saveImageToCache(image: previewImage, fileName: previewFileName)
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.galleryCollectionView.reloadData()
+                    }
+                }
+                
+            case .failure(let error):
+                print("Ошибка загрузки изображения: \(error)")
+            }
+        }
+    }
     
     private func setupView() {
         title = "Gallery"
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "BackgroundColor")
         view.addSubview(galleryCollectionView)
     }
     
@@ -108,18 +129,26 @@ extension GalleryViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as? ImagePreviewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as? ImagePreviewCell else {
+            return UICollectionViewCell()
+        }
         
-        let image = imagesArray[indexPath.row]
-        cell.configure(with: image)
+        let fileName = imagesArray[indexPath.row]
+        if let image = cacheService.loadImageFromCache(fileName: fileName) {
+            cell.configure(with: image)
+        }
+        
         return cell
     }
-    
 }
 
 extension GalleryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        navigationController?.pushViewController(ImageViewController(), animated: true)
+        let fileName = imagesArray[indexPath.row]
+        if let image = cacheService.loadImageFromCache(fileName: fileName) {
+            let imageViewController = ImageViewController(image: image)
+            navigationController?.pushViewController(imageViewController, animated: true)
+        }
     }
 }
 

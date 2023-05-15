@@ -14,7 +14,7 @@ final class ImageViewController: UIViewController {
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.contentMode = .scaleAspectFit
-        scrollView.backgroundColor = .white
+        scrollView.backgroundColor = UIColor(named: "BackgroundColor")
         scrollView.minimumZoomScale = 1
         scrollView.maximumZoomScale = 6
         scrollView.delegate = self
@@ -28,10 +28,18 @@ final class ImageViewController: UIViewController {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
-        imageView.image = UIImage(systemName: "01.square")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    
+    init(image: UIImage) {
+        super.init(nibName: nil, bundle: nil)
+        self.pictureImageView.image = image
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -46,8 +54,10 @@ final class ImageViewController: UIViewController {
     }
     
     private func setupView() {
+        navigationController?.navigationBar.tintColor = UIColor(named: "TextColor")
         view.addSubview(scrollView)
         scrollView.addSubview(pictureImageView)
+        scrollView.contentSize = pictureImageView.bounds.size
     }
     
     private func setupConstraints() {
@@ -57,10 +67,12 @@ final class ImageViewController: UIViewController {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            pictureImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            pictureImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            pictureImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            pictureImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            pictureImageView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            pictureImageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            pictureImageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            pictureImageView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            pictureImageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            pictureImageView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor)
         ])
     }
     
@@ -70,6 +82,7 @@ final class ImageViewController: UIViewController {
         
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(recognizer:)))
         doubleTapGesture.numberOfTapsRequired = 2
+        singleTapGesture.require(toFail: doubleTapGesture)
         
         scrollView.addGestureRecognizer(singleTapGesture)
         scrollView.addGestureRecognizer(doubleTapGesture)
@@ -77,8 +90,8 @@ final class ImageViewController: UIViewController {
     
     private func zoomRectForScale(scale: CGFloat, center: CGPoint) -> CGRect {
         var zoomRect = CGRect.zero
-        zoomRect.size.height = pictureImageView.frame.size.height / scale
-        zoomRect.size.width = pictureImageView.frame.size.width / scale
+        zoomRect.size.height = pictureImageView.bounds.size.height / scale
+        zoomRect.size.width = pictureImageView.bounds.size.width / scale
         
         let newCenter = pictureImageView.convert(center, from: scrollView)
         zoomRect.origin.x = newCenter.x - (zoomRect.size.width / 2.0)
@@ -99,7 +112,8 @@ final class ImageViewController: UIViewController {
     
     @objc private func handleDoubleTap(recognizer: UITapGestureRecognizer) {
         if scrollView.zoomScale == 1 {
-            scrollView.zoom(to: zoomRectForScale(scale: scrollView.maximumZoomScale, center: recognizer.location(in: recognizer.view)), animated: true)
+            let zoomRect = zoomRectForScale(scale: scrollView.maximumZoomScale, center: recognizer.location(in: pictureImageView))
+            scrollView.zoom(to: zoomRect, animated: true)
         } else {
             scrollView.setZoomScale(1, animated: true)
         }
